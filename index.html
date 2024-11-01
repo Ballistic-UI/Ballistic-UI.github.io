@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetris</title>
+    <title>Mobile Tetris</title>
     <style>
         body {
             display: flex;
@@ -20,17 +20,21 @@
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="300" height="600"></canvas>
+    <canvas id="gameCanvas"></canvas>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        
+        // Responsive sizing
         const COLS = 10;
         const ROWS = 20;
-        const BLOCK_SIZE = 30;
+        const BLOCK_SIZE = Math.min(window.innerWidth / COLS, window.innerHeight / ROWS);
+        canvas.width = BLOCK_SIZE * COLS;
+        canvas.height = BLOCK_SIZE * ROWS;
+
         let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
         let currentPiece;
-        let score = 0;
         let gameOver = false;
 
         const pieces = [
@@ -43,13 +47,11 @@
             [[1, 1, 1], [0, 0, 1]]                  // J shape
         ];
 
-        // Get a random piece
         function getRandomPiece() {
             const piece = pieces[Math.floor(Math.random() * pieces.length)];
             return { shape: piece, row: 0, col: Math.floor(COLS / 2) - 1 };
         }
 
-        // Draw the board and pieces
         function drawBoard() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             board.forEach((row, r) => row.forEach((cell, c) => {
@@ -68,41 +70,34 @@
             ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         }
 
-        // Rotate the piece clockwise
         function rotate(piece) {
             const newShape = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
             return { ...piece, shape: newShape };
         }
 
-        // Check if the move is valid
         function isValidMove(piece, rowOffset = 0, colOffset = 0) {
             return piece.shape.every((r, y) => r.every((cell, x) => {
                 const newY = piece.row + y + rowOffset;
                 const newX = piece.col + x + colOffset;
-                return cell === 0 ||
-                    (newY >= 0 && newY < ROWS && newX >= 0 && newX < COLS && !board[newY][newX]);
+                return cell === 0 || (newY >= 0 && newY < ROWS && newX >= 0 && newX < COLS && !board[newY][newX]);
             }));
         }
 
-        // Merge the piece into the board
         function placePiece() {
             currentPiece.shape.forEach((row, r) => row.forEach((cell, c) => {
                 if (cell) board[currentPiece.row + r][currentPiece.col + c] = cell;
             }));
         }
 
-        // Clear filled lines
         function clearLines() {
             board = board.reduce((acc, row) => {
                 if (row.every(cell => cell)) {
-                    score += 10;
                     acc.unshift(Array(COLS).fill(0));
                 } else acc.push(row);
                 return acc;
             }, []);
         }
 
-        // Game loop
         function gameLoop() {
             if (!gameOver) {
                 if (isValidMove(currentPiece, 1)) {
@@ -113,7 +108,7 @@
                     currentPiece = getRandomPiece();
                     if (!isValidMove(currentPiece)) {
                         gameOver = true;
-                        alert(`Game Over! Score: ${score}`);
+                        alert("Game Over!");
                     }
                 }
                 drawBoard();
@@ -121,7 +116,6 @@
             }
         }
 
-        // Key event listeners for controls
         document.addEventListener('keydown', (e) => {
             if (gameOver) return;
             switch (e.key) {
@@ -142,9 +136,48 @@
             drawBoard();
         });
 
-        // Start the game
+        // Touch controls
+        let startX, startY;
+        canvas.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (gameOver) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > BLOCK_SIZE) {
+                    if (isValidMove(currentPiece, 0, 1)) currentPiece.col++;
+                    startX = touch.clientX;
+                } else if (deltaX < -BLOCK_SIZE) {
+                    if (isValidMove(currentPiece, 0, -1)) currentPiece.col--;
+                    startX = touch.clientX;
+                }
+            } else {
+                if (deltaY > BLOCK_SIZE) {
+                    if (isValidMove(currentPiece, 1)) currentPiece.row++;
+                    startY = touch.clientY;
+                }
+            }
+            drawBoard();
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            if (gameOver) return;
+            const rotated = rotate(currentPiece);
+            if (isValidMove(rotated)) currentPiece = rotated;
+            drawBoard();
+        });
+
         currentPiece = getRandomPiece();
         gameLoop();
     </script>
 </body>
 </html>
+
