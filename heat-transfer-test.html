@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heat Transfer Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .quiz-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .question {
+            margin: 20px 0;
+        }
+        .options label {
+            display: block;
+            margin: 8px 0;
+        }
+        #submit-btn {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>Heat Transfer Quiz</h2>
+
+    <!-- Question 1 -->
+    <div class="question">
+        <p>1. Which of the following is NOT a form of heat transfer?</p>
+        <div class="options">
+            <label><input type="radio" name="q1" value="A"> A) Conduction</label>
+            <label><input type="radio" name="q1" value="B"> B) Convection</label>
+            <label><input type="radio" name="q1" value="C"> C) Radiation</label>
+            <label><input type="radio" name="q1" value="D"> D) Reflection</label>
+        </div>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="question">
+        <p>2. In Earth’s mantle, heat is transferred primarily through:</p>
+        <div class="options">
+            <label><input type="radio" name="q2" value="A"> A) Conduction</label>
+            <label><input type="radio" name="q2" value="B"> B) Convection</label>
+            <label><input type="radio" name="q2" value="C"> C) Radiation</label>
+            <label><input type="radio" name="q2" value="D"> D) Absorption</label>
+        </div>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="question">
+        <p>3. When the Sun warms Earth’s surface, which form of heat transfer is primarily involved?</p>
+        <div class="options">
+            <label><input type="radio" name="q3" value="A"> A) Conduction</label>
+            <label><input type="radio" name="q3" value="B"> B) Convection</label>
+            <label><input type="radio" name="q3" value="C"> C) Radiation</label>
+            <label><input type="radio" name="q3" value="D"> D) Evaporation</label>
+        </div>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="question">
+        <p>4. Which form of heat transfer is responsible for warming air close to the ground after it contacts the warm Earth surface?</p>
+        <div class="options">
+            <label><input type="radio" name="q4" value="A"> A) Conduction</label>
+            <label><input type="radio" name="q4" value="B"> B) Convection</label>
+            <label><input type="radio" name="q4" value="C"> C) Radiation</label>
+            <label><input type="radio" name="q4" value="D"> D) Reflection</label>
+        </div>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="question">
+        <p>5. Ocean currents that distribute heat from warmer equatorial waters to cooler polar regions are an example of:</p>
+        <div class="options">
+            <label><input type="radio" name="q5" value="A"> A) Conduction</label>
+            <label><input type="radio" name="q5" value="B"> B) Convection</label>
+            <label><input type="radio" name="q5" value="C"> C) Radiation</label>
+            <label><input type="radio" name="q5" value="D"> D) Evaporation</label>
+        </div>
+    </div>
+
+    <button id="submit-btn" onclick="checkAnswers()">Submit</button>
+    <div id="result"></div>
+</div>
+
+<script>
+    function checkAnswers() {
+        const answers = {
+            q1: 'D',
+            q2: 'B',
+            q3: 'C',
+            q4: 'A',
+            q5: 'B'
+        };
+        
+        let score = 0;
+        
+        for (let i = 1; i <= 5; i++) {
+            const userAnswer = document.querySelector(`input[name="q${i}"]:checked`);
+            if (userAnswer && userAnswer.value === answers[`q${i}`]) {
+                score++;
+            }
+        }
+
+        document.getElementById('result').innerText = `Your score: ${score}/5`;
+    }
+</script>
+
+</body>
